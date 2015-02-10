@@ -102,6 +102,36 @@ class Action(models.Model):
     class Meta:
         ordering = ('-timestamp', )
 
+    @property
+    def actor_polymorphic(self):
+        if self.actor:
+            return self.actor
+
+        if (self.actor_object_id and self.actor_content_type and not self.actor):
+            return self.actor_content_type.model_class().objects.get(pk=self.actor_object_id)
+
+        return ''
+
+    @property
+    def action_object_polymorphic(self):
+        if self.action_object:
+            return self.action_object
+
+        if (self.action_object_object_id and self.action_object_content_type and not self.action_object):
+            return self.action_object_content_type.model_class().objects.get(pk=self.action_object_object_id)
+
+        return ''
+
+    @property
+    def target_polymorphic(self):
+        if self.target:
+            return self.target
+
+        if (self.target_object_id and self.target_content_type and not self.target):
+            return self.target_content_type.model_class().objects.get(pk=self.target_object_id)
+
+        return None
+
     def __str__(self):
         ctx = {
             'actor': self.actor,
